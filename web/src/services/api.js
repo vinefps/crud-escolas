@@ -11,9 +11,9 @@ const api = axios.create({
   },
 });
 
-// ========================================
+
 // INTERCEPTOR - ADICIONAR TOKEN AUTOMATICAMENTE
-// ========================================
+
 api.interceptors.request.use(
   (config) => {
     // Pegar token do localStorage
