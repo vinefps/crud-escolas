@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import api from '../services/api';  // ← IMPORTAR api
+import api from '../services/api';  //  
 
 function UploadCSV({ onUploadCompleto }) {
   const [arquivo, setArquivo] = useState(null);
@@ -64,7 +64,7 @@ function UploadCSV({ onUploadCompleto }) {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-      <h3 className="text-xl font-bold mb-4">📊 Importar Escolas via CSV</h3>
+      <h3 className="text-xl font-bold mb-4"> Importar Escolas via CSV</h3>
       
       <div className="mb-4">
         <input
@@ -103,13 +103,13 @@ function UploadCSV({ onUploadCompleto }) {
             : 'bg-gray-300 text-gray-500 cursor-not-allowed'
         }`}
       >
-        {uploading ? '⏳ Processando...' : '📤 Fazer Upload'}
+        {uploading ? ' Processando...' : ' Fazer Upload'}
       </button>
 
       {/* Resultado do Upload */}
       {resultado && (
         <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded">
-          <h4 className="font-bold text-green-800 mb-2">✅ Upload Concluído!</h4>
+          <h4 className="font-bold text-green-800 mb-2"> Upload Concluído!</h4>
           <div className="text-sm space-y-1">
             <p><strong>Total de linhas:</strong> {resultado.total}</p>
             <p className="text-green-700"><strong>Importadas com sucesso:</strong> {resultado.sucesso}</p>
@@ -137,12 +137,12 @@ function UploadCSV({ onUploadCompleto }) {
 
       {/* Instruções */}
       <div className="mt-4 p-3 bg-gray-50 rounded">
-        <p className="text-xs text-gray-600 font-bold mb-2">📋 Formato esperado do CSV:</p>
+        <p className="text-xs text-gray-600 font-bold mb-2"> Formato esperado do CSV:</p>
         <p className="text-xs text-gray-600 font-mono">
           CODESC;NOMESC;NOMEDEP;DE;MUN;DISTR;TIPOESC;TIPOESC_DESC;CODSIT;SALAS_AULA;BIBLIOTECA;QUADRA_COBERTA;LAB_INFO
         </p>
         <p className="text-xs text-gray-500 mt-2">
-          ⚠️ Use ponto-e-vírgula (;) como separador
+           Use ponto-e-vírgula (;) como separador
         </p>
       </div>
     </div>

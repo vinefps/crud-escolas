@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import BotaoDeletarTudo from './components/BotaoDeletarTudo'; // ← ADICIONADO
+import BotaoDeletarTudo from './components/BotaoDeletarTudo';
 import FormularioEscola from './components/FormularioEscola';
 import ListaEscolas from './components/ListaEscolas';
 import Login from './components/Login';
@@ -20,6 +20,7 @@ function App() {
     total: 0,
     totalPages: 0
   });
+  const [termoBusca, setTermoBusca] = useState('');  // ← ADICIONADO
 
   // Verificar autenticação ao carregar
   useEffect(() => {
@@ -35,6 +36,17 @@ function App() {
       carregarEscolas();
     }
   }, [autenticado, paginacao.page]);
+
+  // ← NOVO useEffect para busca
+  useEffect(() => {
+    if (autenticado) {
+      const timer = setTimeout(() => {
+        setPaginacao({ ...paginacao, page: 1 });
+        carregarEscolas();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [termoBusca]);
 
   // Callback de login bem-sucedido
   const handleLoginSuccess = (userData) => {
@@ -56,7 +68,8 @@ function App() {
       setCarregando(true);
       const resposta = await escolasAPI.listarTodas({
         page: paginacao.page,
-        limit: paginacao.limit
+        limit: paginacao.limit,
+        search: termoBusca  // ← ADICIONADO
       });
 
       if (resposta.success) {
@@ -174,7 +187,7 @@ function App() {
               onClick={handleLogout}
               className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition-colors"
             >
-              🚪 Sair
+               Sair
             </button>
           </div>
         </div>
@@ -190,16 +203,29 @@ function App() {
 
         {/* Botões de ação */}
         {!mostrarFormulario && (
-          <div className="mb-6 flex justify-between items-center">
-            <button
-              onClick={handleNovaEscola}
-              className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded shadow"
-            >
-              + Nova Escola
-            </button>
+          <div className="mb-6">
+            <div className="flex justify-between items-center mb-4">
+              <button
+                onClick={handleNovaEscola}
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded shadow"
+              >
+                + Nova Escola
+              </button>
 
-            <div className="text-gray-600">
-              Total: <strong>{paginacao.total}</strong> escolas
+              <div className="text-gray-600">
+                Total: <strong>{paginacao.total}</strong> escolas
+              </div>
+            </div>
+
+            {/* ← CAMPO DE BUSCA ADICIONADO */}
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder=" Buscar escola por nome ou código..."
+                value={termoBusca}
+                onChange={(e) => setTermoBusca(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+              />
             </div>
           </div>
         )}
@@ -218,7 +244,7 @@ function App() {
               <UploadCSV onUploadCompleto={carregarEscolas} />
             </div>
 
-            {/* ← BOTÃO DELETAR TUDO ADICIONADO AQUI */}
+            {/* Botão Deletar Tudo */}
             <BotaoDeletarTudo onDeletarCompleto={carregarEscolas} />
 
             {/* Lista de Escolas */}
