@@ -1,11 +1,14 @@
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { escolasAPI } from './services/api';
+import { isAuthenticated, getUser, logout } from './services/auth';
+import Login from './components/Login';
 import FormularioEscola from './components/FormularioEscola';
 import ListaEscolas from './components/ListaEscolas';
-import { escolasAPI } from './services/api';
-import UploadCSV from './components/uploadCSV';
-
+import UploadCSV from './components/UploadCSV';
 
 function App() {
+  const [autenticado, setAutenticado] = useState(false);
+  const [usuario, setUsuario] = useState(null);
   const [escolas, setEscolas] = useState([]);
   const [escolaSelecionada, setEscolaSelecionada] = useState(null);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
@@ -17,12 +20,36 @@ function App() {
     totalPages: 0
   });
 
-  // Carregar escolas ao iniciar
+  // Verificar autenticação ao carregar
   useEffect(() => {
-    carregarEscolas();
-  }, [paginacao.page]);
+    if (isAuthenticated()) {
+      setAutenticado(true);
+      setUsuario(getUser());
+    }
+  }, []);
 
-  // Função para carregar todas as escolas
+  // Carregar escolas quando autenticado
+  useEffect(() => {
+    if (autenticado) {
+      carregarEscolas();
+    }
+  }, [autenticado, paginacao.page]);
+
+  // Callback de login bem-sucedido
+  const handleLoginSuccess = (userData) => {
+    setAutenticado(true);
+    setUsuario(userData);
+  };
+
+  // Fazer logout
+  const handleLogout = () => {
+    logout();
+    setAutenticado(false);
+    setUsuario(null);
+    setEscolas([]);
+  };
+
+  // Carregar escolas
   const carregarEscolas = async () => {
     try {
       setCarregando(true);
@@ -30,7 +57,7 @@ function App() {
         page: paginacao.page,
         limit: paginacao.limit
       });
-
+      
       if (resposta.success) {
         setEscolas(resposta.data);
         if (resposta.pagination) {
@@ -42,47 +69,44 @@ function App() {
       }
     } catch (erro) {
       console.error('Erro ao carregar escolas:', erro);
-      alert('Erro ao carregar escolas. Verifique se o backend está rodando na porta 3000.');
+      alert('Erro ao carregar escolas');
     } finally {
       setCarregando(false);
     }
   };
 
-  // Função para salvar (criar ou atualizar) escola
+  // Salvar escola
   const handleSalvar = async (dadosEscola) => {
     try {
       if (escolaSelecionada) {
-        // Atualizar escola existente
         const resposta = await escolasAPI.atualizar(escolaSelecionada.id, dadosEscola);
         if (resposta.success) {
           alert('Escola atualizada com sucesso!');
         }
       } else {
-        // Criar nova escola
         const resposta = await escolasAPI.criar(dadosEscola);
         if (resposta.success) {
           alert('Escola cadastrada com sucesso!');
         }
       }
-
-      // Recarregar lista e fechar formulário
+      
       carregarEscolas();
       setMostrarFormulario(false);
       setEscolaSelecionada(null);
     } catch (erro) {
       console.error('Erro ao salvar escola:', erro);
-      const mensagem = erro.response?.data?.message || 'Erro ao salvar escola. Tente novamente.';
+      const mensagem = erro.response?.data?.message || 'Erro ao salvar escola';
       alert(mensagem);
     }
   };
 
-  // Função para editar escola
+  // Editar escola
   const handleEditar = (escola) => {
     setEscolaSelecionada(escola);
     setMostrarFormulario(true);
   };
 
-  // Função para deletar escola
+  // Deletar escola
   const handleDeletar = async (id) => {
     if (window.confirm('Tem certeza que deseja deletar esta escola?')) {
       try {
@@ -93,24 +117,24 @@ function App() {
         }
       } catch (erro) {
         console.error('Erro ao deletar escola:', erro);
-        alert('Erro ao deletar escola. Tente novamente.');
+        alert('Erro ao deletar escola');
       }
     }
   };
 
-  // Função para cancelar e voltar
+  // Cancelar formulário
   const handleCancelar = () => {
     setMostrarFormulario(false);
     setEscolaSelecionada(null);
   };
 
-  // Função para abrir formulário de nova escola
+  // Nova escola
   const handleNovaEscola = () => {
     setEscolaSelecionada(null);
     setMostrarFormulario(true);
   };
 
-  // Funções de paginação
+  // Paginação
   const handlePaginaAnterior = () => {
     if (paginacao.page > 1) {
       setPaginacao({ ...paginacao, page: paginacao.page - 1 });
@@ -123,13 +147,35 @@ function App() {
     }
   };
 
+  // Se não estiver autenticado, mostrar tela de login
+  if (!autenticado) {
+    return <Login onLoginSuccess={handleLoginSuccess} />;
+  }
+
+  // Interface principal (quando autenticado)
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Cabeçalho */}
       <header className="bg-blue-600 text-white p-6 shadow-lg">
-        <div className="container mx-auto">
-          <h1 className="text-3xl font-bold">CRUD de Escolas - São Paulo</h1>
-          <p className="text-blue-100">Sistema de Gerenciamento de Escolas</p>
+        <div className="container mx-auto flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold">CRUD de Escolas - São Paulo</h1>
+            <p className="text-blue-100">Sistema de Gerenciamento de Escolas</p>
+          </div>
+          
+          {/* Informações do Usuário e Logout */}
+          <div className="flex items-center gap-4">
+            <div className="text-right">
+              <p className="text-sm text-blue-100">Bem-vindo,</p>
+              <p className="font-bold">{usuario?.nome}</p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition-colors"
+            >
+              🚪 Sair
+            </button>
+          </div>
         </div>
       </header>
 
@@ -151,7 +197,6 @@ function App() {
               + Nova Escola
             </button>
 
-            {/* Info de paginação */}
             <div className="text-gray-600">
               Total: <strong>{paginacao.total}</strong> escolas
             </div>
@@ -185,10 +230,11 @@ function App() {
                 <button
                   onClick={handlePaginaAnterior}
                   disabled={paginacao.page === 1}
-                  className={`px-4 py-2 rounded font-bold ${paginacao.page === 1
+                  className={`px-4 py-2 rounded font-bold ${
+                    paginacao.page === 1
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       : 'bg-blue-500 hover:bg-blue-600 text-white'
-                    }`}
+                  }`}
                 >
                   ← Anterior
                 </button>
@@ -200,10 +246,11 @@ function App() {
                 <button
                   onClick={handleProximaPagina}
                   disabled={paginacao.page === paginacao.totalPages}
-                  className={`px-4 py-2 rounded font-bold ${paginacao.page === paginacao.totalPages
+                  className={`px-4 py-2 rounded font-bold ${
+                    paginacao.page === paginacao.totalPages
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       : 'bg-blue-500 hover:bg-blue-600 text-white'
-                    }`}
+                  }`}
                 >
                   Próxima →
                 </button>

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // URL base da sua API backend
-const API_URL = 'http://localhost:3000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 // Configuração do axios
 const api = axios.create({
@@ -10,6 +10,46 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+// ========================================
+// INTERCEPTOR - ADICIONAR TOKEN AUTOMATICAMENTE
+// ========================================
+api.interceptors.request.use(
+  (config) => {
+    // Pegar token do localStorage
+    const token = localStorage.getItem('token');
+
+    // Se tiver token, adicionar no header
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+
+// ERRO 401 (NÃO AUTORIZADO)
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Se retornar 401, significa que o token expirou/inválido
+    if (error.response?.status === 401) {
+      // Limpar autenticação
+      localStorage.removeItem('token');
+      localStorage.removeItem('usuario');
+
+      // Recarregar página (vai voltar pro login)
+      window.location.href = '/';
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 // Funções para o CRUD de Escolas
 export const escolasAPI = {
@@ -25,19 +65,19 @@ export const escolasAPI = {
     return response.data;
   },
 
-  // Criar nova escola
+  // Criar nova escola (PROTEGIDA - precisa de token)
   criar: async (escola) => {
     const response = await api.post('/escolas', escola);
     return response.data;
   },
 
-  // Atualizar escola
+  // Atualizar escola (PROTEGIDA - precisa de token)
   atualizar: async (id, escola) => {
     const response = await api.put(`/escolas/${id}`, escola);
     return response.data;
   },
 
-  // Deletar escola
+  // Deletar escola (PROTEGIDA - precisa de token)
   deletar: async (id) => {
     const response = await api.delete(`/escolas/${id}`);
     return response.data;
