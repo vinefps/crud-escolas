@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { referenciasAPI } from '../services/api';
 
 function FormularioEscola({ escolaSelecionada, onSalvar, onCancelar }) {
@@ -102,7 +102,15 @@ function FormularioEscola({ escolaSelecionada, onSalvar, onCancelar }) {
   }
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
+    <div className="bg-white p-6 rounded-lg shadow-md relative">
+      {/* Botão X para fechar */}
+      <button
+        onClick={onCancelar}
+        className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold"
+      >
+        ✕
+      </button>
+
       <h2 className="text-2xl font-bold mb-4">
         {escolaSelecionada ? 'Editar Escola' : 'Nova Escola'}
       </h2>
@@ -334,7 +342,7 @@ function FormularioEscola({ escolaSelecionada, onSalvar, onCancelar }) {
           >
             {escolaSelecionada ? 'Atualizar' : 'Cadastrar'}
           </button>
-          
+
           <button
             type="button"
             onClick={onCancelar}

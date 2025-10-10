@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { escolasAPI } from './services/api';
-import { isAuthenticated, getUser, logout } from './services/auth';
-import Login from './components/Login';
+import { useEffect, useState } from 'react';
+import BotaoDeletarTudo from './components/BotaoDeletarTudo'; // ← ADICIONADO
 import FormularioEscola from './components/FormularioEscola';
 import ListaEscolas from './components/ListaEscolas';
+import Login from './components/Login';
 import UploadCSV from './components/UploadCSV';
+import { escolasAPI } from './services/api';
+import { getUser, isAuthenticated, logout } from './services/auth';
 
 function App() {
   const [autenticado, setAutenticado] = useState(false);
@@ -57,7 +58,7 @@ function App() {
         page: paginacao.page,
         limit: paginacao.limit
       });
-      
+
       if (resposta.success) {
         setEscolas(resposta.data);
         if (resposta.pagination) {
@@ -89,7 +90,7 @@ function App() {
           alert('Escola cadastrada com sucesso!');
         }
       }
-      
+
       carregarEscolas();
       setMostrarFormulario(false);
       setEscolaSelecionada(null);
@@ -162,7 +163,7 @@ function App() {
             <h1 className="text-3xl font-bold">CRUD de Escolas - São Paulo</h1>
             <p className="text-blue-100">Sistema de Gerenciamento de Escolas</p>
           </div>
-          
+
           {/* Informações do Usuário e Logout */}
           <div className="flex items-center gap-4">
             <div className="text-right">
@@ -217,6 +218,9 @@ function App() {
               <UploadCSV onUploadCompleto={carregarEscolas} />
             </div>
 
+            {/* ← BOTÃO DELETAR TUDO ADICIONADO AQUI */}
+            <BotaoDeletarTudo onDeletarCompleto={carregarEscolas} />
+
             {/* Lista de Escolas */}
             <ListaEscolas
               escolas={escolas}
@@ -230,11 +234,10 @@ function App() {
                 <button
                   onClick={handlePaginaAnterior}
                   disabled={paginacao.page === 1}
-                  className={`px-4 py-2 rounded font-bold ${
-                    paginacao.page === 1
+                  className={`px-4 py-2 rounded font-bold ${paginacao.page === 1
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       : 'bg-blue-500 hover:bg-blue-600 text-white'
-                  }`}
+                    }`}
                 >
                   ← Anterior
                 </button>
@@ -246,11 +249,10 @@ function App() {
                 <button
                   onClick={handleProximaPagina}
                   disabled={paginacao.page === paginacao.totalPages}
-                  className={`px-4 py-2 rounded font-bold ${
-                    paginacao.page === paginacao.totalPages
+                  className={`px-4 py-2 rounded font-bold ${paginacao.page === paginacao.totalPages
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       : 'bg-blue-500 hover:bg-blue-600 text-white'
-                  }`}
+                    }`}
                 >
                   Próxima →
                 </button>

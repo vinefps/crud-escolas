@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // URL base da sua API backend
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // Configuração do axios
 const api = axios.create({
@@ -126,6 +126,15 @@ export const referenciasAPI = {
   // Listar situações
   listarSituacoes: async () => {
     const response = await api.get('/referencias/situacoes');
+    return response.data;
+  },
+};
+
+// ← ADICIONAR OBJETO adminAPI AQUI
+export const adminAPI = {
+  // Deletar todos os dados
+  deletarTodosDados: async () => {
+    const response = await api.delete('/admin/deletar-tudo');
     return response.data;
   },
 };
