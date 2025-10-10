@@ -10,13 +10,15 @@ exports.listarEscolas = async (req, res) => {
     let query = `
       SELECT 
         e.id, e.codigo, e.nome,
+        e.rede_ensino_id, e.diretoria_id, e.municipio_id,
+        e.distrito_id, e.tipo_escola_id, e.situacao_id,
         r.nome as rede_ensino,
         d.nome as diretoria,
         m.nome as municipio,
         dist.nome as distrito,
         te.descricao as tipo_escola,
         s.codigo as situacao,
-        e.salas_aula
+        e.salas_aula, e.biblioteca, e.quadra_coberta, e.lab_info
       FROM escolas e
       JOIN redes_ensino r ON e.rede_ensino_id = r.id
       JOIN diretorias d ON e.diretoria_id = d.id
