@@ -46,7 +46,7 @@ Sistema para gerenciamento de infraestrutura das escolas do município de São P
 ### Backend
 
 1. Clone o repositório
-```bash
+
 git clone https://github.com/seu-usuario/crud-escolas.git
 cd crud-escolas/api
 
