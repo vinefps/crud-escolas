@@ -35,7 +35,7 @@ Sistema para gerenciamento de infraestrutura das escolas do município de São P
 ## 🔗 Links
 
 - **Aplicação Online:** https://crud-escolas.vercel.app/
-- **API Backend:** https://seu-backend.railway.app
+- **API Backend:** https://crud-escolas-production.up.railway.app (substitua pela URL real do seu Railway)
 
 ## 🖥️ Como Executar Localmente
 
@@ -45,15 +45,19 @@ Sistema para gerenciamento de infraestrutura das escolas do município de São P
 
 ### Backend
 
-1. Clone o repositório
-
+1. Clone o repositório e entre na pasta do backend
+```bash
 git clone https://github.com/seu-usuario/crud-escolas.git
 cd crud-escolas/api
+```
 
 2. Instale as dependências
+```bash
 npm install
+```
 
-3. Configure o .env
+3. Configure o arquivo .env na raiz da pasta api
+```env
 DB_USER=postgres
 DB_HOST=localhost
 DB_NAME=escolas
@@ -62,38 +66,54 @@ DB_PORT=5432
 NODE_ENV=development
 JWT_SECRET=seu_segredo_aqui
 FRONTEND_URL=http://localhost:5173
+```
 
-4. Executa o schema para criar a estrutura do BD.
-cd crud-escolas/api
+4. Crie o banco de dados e execute o schema para criar as tabelas
+```bash
+psql -U postgres -c "CREATE DATABASE escolas;"
 psql -U postgres -d escolas -f src/db/schema.sql
+```
 
-5. Execute o servidor
-cd crud-escolas/api
-npm run dev 
+5. Execute o servidor backend
+```bash
+npm run dev
+```
+O servidor estará rodando em http://localhost:5000
 
-Frontend
+### Frontend
 
-1. Entre na pasta web
-cd ../web
+1. Abra um novo terminal e entre na pasta web
+```bash
+cd crud-escolas/web
+```
 
 2. Instale as dependências
-npm install 
+```bash
+npm install
+```
 
-3. Configure o .env
-OBS: O BACKEND está configurado para rodar na porta 5000
+3. Configure o arquivo .env na raiz da pasta web
+```env
 VITE_API_URL=http://localhost:5000/api
+```
 
 4. Execute o servidor de desenvolvimento
-cd crud-escolas/web
+```bash
 npm run dev
+```
+A aplicação estará rodando em http://localhost:5173
 
-👤 Usuário de Teste
+## 👤 Usuário de Teste
+
+```
 Email: admin@escola.com
 Senha: admin123
+```
 
-📊 Fonte dos Dados
-CSV - https://dados.educacao.sp.gov.br/dataset/instala%C3%A7%C3%B5es-f%C3%ADsicas-por-unidade-escolar
+## 📊 Fonte dos Dados
 
-## 📝 Projeto
+[CSV - Instalações Físicas por Unidade Escolar - Município de São Paulo](https://dados.educacao.sp.gov.br/dataset/instala%C3%A7%C3%B5es-f%C3%ADsicas-por-unidade-escolar)
 
-Desenvolvido como teste prático para vaga de Desenvolvedor Fullstack.
+## 📝 Sobre
+
+Projeto desenvolvido como teste prático para vaga de Desenvolvedor Fullstack.
