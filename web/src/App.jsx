@@ -187,7 +187,7 @@ function App() {
               onClick={handleLogout}
               className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition-colors"
             >
-               Sair
+              Sair
             </button>
           </div>
         </div>
@@ -255,8 +255,22 @@ function App() {
             />
 
             {/* Paginação */}
+            {/* Paginação */}
             {paginacao.totalPages > 1 && (
-              <div className="mt-6 flex justify-center items-center gap-4">
+              <div className="mt-6 flex justify-center items-center gap-2">
+                {/* Botão Primeira */}
+                <button
+                  onClick={() => setPaginacao({ ...paginacao, page: 1 })}
+                  disabled={paginacao.page === 1}
+                  className={`px-4 py-2 rounded font-bold ${paginacao.page === 1
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-blue-500 hover:bg-blue-600 text-white'
+                    }`}
+                >
+                  Primeira
+                </button>
+
+                {/* Botão Anterior */}
                 <button
                   onClick={handlePaginaAnterior}
                   disabled={paginacao.page === 1}
@@ -265,13 +279,15 @@ function App() {
                       : 'bg-blue-500 hover:bg-blue-600 text-white'
                     }`}
                 >
-                  ← Anterior
+                  Anterior
                 </button>
 
-                <span className="text-gray-700">
+                {/* Indicador de Página */}
+                <span className="text-gray-700 px-4">
                   Página <strong>{paginacao.page}</strong> de <strong>{paginacao.totalPages}</strong>
                 </span>
 
+                {/* Botão Próxima */}
                 <button
                   onClick={handleProximaPagina}
                   disabled={paginacao.page === paginacao.totalPages}
@@ -280,7 +296,19 @@ function App() {
                       : 'bg-blue-500 hover:bg-blue-600 text-white'
                     }`}
                 >
-                  Próxima →
+                  Próxima
+                </button>
+
+                {/* Botão Última */}
+                <button
+                  onClick={() => setPaginacao({ ...paginacao, page: paginacao.totalPages })}
+                  disabled={paginacao.page === paginacao.totalPages}
+                  className={`px-4 py-2 rounded font-bold ${paginacao.page === paginacao.totalPages
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-blue-500 hover:bg-blue-600 text-white'
+                    }`}
+                >
+                  Última
                 </button>
               </div>
             )}
